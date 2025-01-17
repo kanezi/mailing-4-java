@@ -1,0 +1,25 @@
+= Text Mail Message
+
+Spring provides helper class ```SimpleMailMessage``` to facilitate sending text mails.
+
+On SimpleMailMessage we can set email parameters, like __from__, __to__, __subject__ and __text__ and pass it to JavaMailSender instance to send text email messages.
+
+
+
+[source,java]
+----
+@Service
+@Value
+public class SimpleMailService {
+    JavaMailSender javaMailSender;
+
+    public void sendTextMessage(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("noreply@example.com");
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        javaMailSender.send(message);
+    }
+}
+----

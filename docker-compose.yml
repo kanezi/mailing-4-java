@@ -1,0 +1,15 @@
+# tag::local-mail-server[]
+services:
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    ports:
+      - 8025:8025
+      - 1025:1025
+  # end::local-mail-server[]
+  #  popular tool that's not being developed anymore
+  #  mailhog:
+  #    image: mailhog/mailhog:v1.0.1
+  #    ports:
+  #      - 1025:1025
+  #      - 8025:8025

@@ -1,0 +1,56 @@
+= GreenMail testing
+
+link:https://greenmail-mail-test.github.io/greenmail/[GreenMail] is open source library we can use to test our mail sending and receiving code.
+
+For sending purposes GreenMail responds like a regular SMTP server but does not deliver any email. Messages can be extracted, verified and modified in our test cases.
+
+== Spring integration
+
+To use GreenMail in Springs integration tests we can register GreenMail extension if we need to verify that correct mail is being sent.
+
+We can also use GreenMail with TestContainers.
+
+=== GreenMail extension
+
+We start by including GreenMail as dependency to our project:
+
+[indent=0]
+----
+include::example$pom.xml[tag=greenmail-testing-dependency]
+----
+
+and defining appropriate ```spring.mail.*``` **test** ```application.properties```
+
+----
+include::example$src/test/resources/application.properties[tag=greenmail-testing-properties]
+----
+
+We can then use GreenMail extension in our integration tests
+
+----
+include::example$src/test/java/com/kanezi/mailing_4_java/MailControllerIT.java[tag=greenmail-integration-test]
+----
+
+=== GreenMail with Testcontainers
+
+link:https://testcontainers.com/[Testcontainers] is library for providing throwaway, lightweight instances of anything that can run in a Docker container.
+
+With Testcontainers we don't need to mock our test environments. Instead, we define our test dependencies as code, then simply run your tests and containers will be created and then deleted.
+
+Spring provides Testcontainers integrations with:
+
+[indent=0]
+----
+include::example$pom.xml[tag=spring-testcontainers-dependency]
+----
+
+Currently, there's no specific Testcontainers module for GreenMail, but we can use ```GenericContainer``` to verify that our email service indeed send email.
+
+[source,java]
+----
+include::example$src/test/java/com/kanezi/mailing_4_java/MailServiceIT.java[tag=greenmail-testcontainers-test]
+----
+
+Since Testcontainers modules start on random ports to enable parallel testing and avoid port clashing, we need to wait for GreenMail Docker container startup by listening for appropriate log message and after startup dynamically register ```spring.mail.*``` properties by using Springs ```DynamicPropertyRegistry ```.
+
+After GreenMail Testcontainers Spring setup, we can verify that our mail service is indeed sending mails.

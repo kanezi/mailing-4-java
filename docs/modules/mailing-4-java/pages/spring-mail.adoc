@@ -1,0 +1,23 @@
+= Mailing for Spring
+
+Spring provides mail started dependency that makes working with xref:java-mail.adoc[Jakarta Mail] easier.
+
+The main advantage Spring abstraction provides is that we don't have to deal with jakarta Session in any way.
+
+Additionally, Spring also provides helper classes to make constructing email messages easier.
+
+By including dependency in your project:
+
+[indent=0]
+----
+include::example$pom.xml[tag=spring-boot-mail-starter-dependency]
+----
+
+and defining ```spring.mail.*``` properties for host, port, username and password:
+----
+include::example$src/main/resources/application.properties[tag=spring-mail-basic-properties]
+----
+
+Spring autoconfigures and exposes **JavaMailSender** bean which we can inject and use to send mail.
+
+If we need to send simple text messages, we can use ```SimpleMailMessage``` and for html messages and for messages using inline images and attachments we can ```MimeMessage``` (multipart message).

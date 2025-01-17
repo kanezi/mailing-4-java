@@ -1,0 +1,2 @@
+.Mailing for Java
+* xref:spring-mail.adoc[Spring mail]

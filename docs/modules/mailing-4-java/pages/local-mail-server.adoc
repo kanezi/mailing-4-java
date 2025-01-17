@@ -1,0 +1,22 @@
+= Local Mail Server
+
+While we are developing our email sending application code in local environment we don't want to hammer real mail servers with our testing messages.
+
+
+Instead, we can use tools that act as local SMTP server, intercept mails we send and provide web interface allowing developers to view emails without sending them to actual email addresses.
+
+One of the first such tools was link:https://github.com/mailhog/MailHog[MailHog], which is no longer actively maintained but has inspired other similar tools like link:https://mailpit.axllent.org/[MailPit].
+
+We could still use MailHog, but MailPit is feature rich and actively developed.
+
+We can create ```docker-compose.yml``` definition for our mailpit service:
+
+----
+include::example$docker-compose.yml[tag=local-mail-server]
+----
+
+and run it with ```docker compose up -d```, and destroy it and clean resources with ```docker compose down -v```.
+
+MailPit exposes user-friendly web interface on port 8025, where you can view, search, and inspect the emails that have been captured, including their content and headers.
+
+It acts as a **local SMTP server**, which means you can configure your application to send emails directly to Mailpit instead of a real email server.

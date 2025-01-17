@@ -1,0 +1,57 @@
+= Gmail SMTP Server
+
+Link describing on how to use link:https://support.google.com/a/answer/176600?hl=en[Email] support through Google Workspace.
+
+You can send email to anyone inside or outside your organization using **smtp.gmail.com** as your SMTP server.
+
+This option requires you to authenticate with your Gmail or Google Workspace account and password when you set it up.
+
+The device uses those credentials every time it attempts to send email.
+
+The sending limit is 2,000 messages per day.
+
+[[app_passwords]]
+== Google App passwords
+
+An app password is a 16-digit passcode that gives a less secure app or device permission to access your Google Account.
+
+App passwords can only be used with accounts that have 2-Step Verification turned on.
+
+image::image$google_2step_verification.png[Google 2-Step Verification]
+
+Manage your app passwords at:
+https://myaccount.google.com/apppasswords
+
+image::image$google_app_passwords_create.png[Create App password]
+
+After we create app password we'll be presented with one time 16-digit code we can use as our google account password:
+
+image::image$google_app_passwords_code.png[One time App password code]
+
+
+link:https://support.google.com/accounts/answer/185833?hl=en[Instructions] on what are and how to use app passwords
+
+== Gmail SMTP properties
+
+For server address, enter smtp.gmail.com.
+
+For Port, enter one of the following numbers:
+
+ * For SSL, enter 465
+ * For TLS, enter 587
+
+For authentication, enter your complete Google email address (for example: your.name@gmail.com) and link:#app_passwords[app password].
+
+Example of application.properties for Gmail SMTP for Spring Boot app:
+----
+include::example$src/main/resources/application.properties[tag=spring-mail-gmail-smtp]
+----
+This setup expects __GMAIL_USERNAME__ and __GMAIL_PASSWORD__ environment variables populated with appropriate values.
+
+
+
+
+
+
+
+

@@ -1,0 +1,117 @@
+= HTML Email
+
+Mail supports HTML and CSS to allow us to create html mail messages.
+
+Mail HTML is not in line with standards found on the web, so you can't just transfer your knowledge from web development one for one.
+
+For HTML in email there are **no standards**.
+
+Mail clients tend to implement things differently with Microsoft Outlook idiosyncrasies usually requiring special attention.
+
+== **Mail != Web**
+
+Since there are **no standards** for email HTML, certain basic things work, but a lot of them don't:
+
+.What works in email
+[cols="1,1"]
+|===
+|Works |Doesn't work
+
+|Basic HTML
+|Float-based design
+
+|Basic CSS
+|CSS grid based design
+
+|Table-based design
+|Javascript
+
+|Simple semantics
+|A lot of css
+|===
+
+Most notably email clients wont support javascript or css linking for security reasons.
+
+=== Email friendly HTML
+
+For most things in email we'll want to use __email friendy__ html tags that are supported everywhere.
+
+Basic, non-structural containers:: div, span
+Headings:: h1 - h6
+Other text:: p, strong, em
+Images:: img
+
+=== Email-Friendly CSS
+
+For email, we can't use [.line-through]#Linked stylesheets#.
+
+We can use:
+
+* Embedded styles
+* Inline styles
+
+Css properties that works:
+
+For text:: color, font-family, font-size, font-style,
+font-weight, line-height, text-align
+For block-level elements:: margin, padding, width, max-width
+
+=== Images in Email
+
+It's recommended to make images responsive by default and use alternative text.
+
+As far as for image format we should stick to the standard: __jpg__, __png__, __gif__.
+
+=== Tables in email
+
+Since we can't use css floats we use tables to present content in email.
+
+Some guidelines for using Tables in Email:
+
+* Keep tables quiet using role="presentation"
+* Ignore table headers, body, footer
+* Keep components in their own rows/tables
+* Overwrite defaults using HTML attributes
+* Place most styles on table cells
+
+Example of how boilerplate table html for presentation can look like:
+----
+<table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+  <tr>
+    <td style="styles go here">
+    </td>
+ </tr>
+</table>
+----
+
+== Email engineering
+
+Email campaigns and engagement are still very relevant part of the business.
+
+Email engineering practice deals with problems of sending emails that will look properly on various devices and clients.
+
+Companies like link:https://www.litmus.com/[litmus] provide tested email templates and tools that will let you preview how emails you're about to send look on various devices.
+
+Email templates usually contain __css resets__ that take care of
+
+* Microsoft Office behavior
+* Browser and client default behavior
+* Blue auto-linking behavior
+
+Good email templates will also take people disabilities in account and make templates accessible by taking care to:
+
+* Keep color contrast high
+* Create a strong visual hierarchy
+* Focus on readability
+* Keep layouts simple and usable
+
+
+=== Guidelines for accessible email
+
+* Keep tables quiet using role="presentation"
+* Use semantic markup to reinforce hierarchy
+* Include text alternatives for images
+* Include the language of an email
+
+
+

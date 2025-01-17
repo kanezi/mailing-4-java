@@ -1,0 +1,118 @@
+= HTML mail message
+
+MIME (Multipurpose Internet Mail Extensions) messages are a type of email format that allows for the inclusion of various content types, such as text, images, audio, and video, beyond just plain text.
+
+Spring provides helper class ```MimeMessageHelper``` to facilitate sending html mails with attachments and inline resources.
+
+We create ```MimeMessageHelper``` for ```MimeMessage``` we get from  ```JavaMailSender``` instance.
+
+We can set email parameters, like __from__, __to__, __subject__ and more importantly __text__ as html (second parameter to setText is __true__) and pass it to JavaMailSender instance to send mime email messages.
+
+We can add attachments and inline resources with appropriate methods.
+
+WARNING: Ordering for inline resources is important and needs to come AFTER we set html text. Inline __Content id__ needs to match html __cid:__ attribute (in our example __logo__).
+
+[source,java]
+----
+@Service
+@Value
+public class SimpleMailService {
+    JavaMailSender javaMailSender;
+
+    public void hardcodedHtmlExample() throws MessagingException, FileNotFoundException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setFrom("noreply@example.com");
+        helper.setTo("user@gmail.com");
+        helper.setSubject("html mail with resources");
+
+        helper.addAttachment("junit-cheat-sheet.pdf", ResourceUtils.getFile("classpath:templates/mail/attachments/junit-cheat-sheet.pdf"));
+
+        helper.setText("<html><body><img src='cid:logo'></body></html>", true);
+        // Ordering is important for inlining
+        // we first need to add html text, then resources
+        helper.addInline("logo", ResourceUtils.getFile("classpath:templates/mail/attachments/email-logo.png"));
+
+        javaMailSender.send(message);
+    }
+}
+----
+
+If we check raw email we've send, we'll confirm that Mime message are multipart messages with parts for every resource we've included.
+
+----
+From: noreply@example.com
+To: user@gmail.com
+Message-ID: <1800306724.2.1736589968522@host.docker.internal>
+Subject: html mail with resources
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_Part_0_1871378379.1736589967410"
+
+------=_Part_0_1871378379.1736589967410
+Content-Type: multipart/related;
+	boundary="----=_Part_1_2068167739.1736589967414"
+
+------=_Part_1_2068167739.1736589967414
+Content-Type: text/html;charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><img src='cid:logo'></body></html>
+------=_Part_1_2068167739.1736589967414
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Content-ID: <logo>
+
+iVBORw0KGgoAAAANSUhEUgAAAgMAAADLCAYAAADz/5CnAAAKrGlDQ1BJQ0MgUHJvZmlsZQAASImV
+lwdQk9kWx+/3pTcCJFQpoTfpLYCU0AMoSAdRCUmAUEIMBKXYWVzBtSAizQK6SlFwLYCsFVGsKFhA
+.......
+----
+
+[#code-example]
+== General method for sending html mails
+
+General method for sending html mails with resources could take html and list of  attachments and inline resources as parameter and look something like this:
+
+[source,java]
+----
+@Service
+@Value
+public class SimpleMailService {
+    private static final String NO_REPLY_ADDRESS = "noreply@example.com";
+
+    JavaMailSender javaMailSender;
+
+    public record MailResource(String name, File file) {
+    }
+
+    public void sendHtml(String to,
+                         String subject,
+                         String htmlBody,
+                         List<MailResource> inlines,
+                         List<MailResource> attachments) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setFrom(NO_REPLY_ADDRESS);
+        helper.setTo(to);
+        helper.setSubject(subject);
+
+        if (Objects.nonNull(attachments)) {
+            for (MailResource attachment: attachments) {
+                helper.addAttachment(attachment.name, attachment.file);
+            }
+        }
+
+        helper.setText(htmlBody, true);
+
+        if (Objects.nonNull(inlines)) {
+            for (MailResource inline : inlines) {
+                helper.addInline(inline.name, inline.file);
+            }
+        }
+
+        javaMailSender.send(message);
+    }
+}
+----

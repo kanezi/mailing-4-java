@@ -1,0 +1,114 @@
+= Template Email Message
+
+Typically, we do not want to create content of email messages in Java code, as it can be tedious and error prone.
+
+Instead, the approach we can take is to use a template library (such as link:https://www.thymeleaf.org/[Thymeleaf] or link:https://freemarker.apache.org/[FreeMarker]) to define the display structure of email content.
+
+In code, we are only tasked with creating the data template needs to be rendered in the email.
+
+image::image$freemaker-overview.png[]
+
+
+== Thymeleaf
+
+When we use templating library, in our example thymeleaf:
+
+[indent=0]
+----
+include::example$pom.xml[tag=thymeleaf-dependency]
+----
+
+Spring autoconfigures ```SpringTemplateEngine``` bean that we can inject in our service.
+
+We can use templating engine to populate model with values and process template to produce final html that we can pass to our email sending service.
+
+[source,java]
+----
+@Service
+@Value
+public class TemplateMailService {
+    SpringTemplateEngine thymeleafTemplateEngine;
+    SimpleMailService simpleMailService;
+
+    record SingleColumnTemplate(String title, String preview, String body){}
+
+    public void sendHtmlTemplateMessage(String to, String subject,  SingleColumnTemplate singleColumnTemplate) throws MessagingException {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("title", singleColumnTemplate.title);
+        templateModel.put("preview", singleColumnTemplate.preview);
+        templateModel.put("body", singleColumnTemplate.body);
+
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(templateModel);
+        String templateHtmlBody = thymeleafTemplateEngine.process("mail/single-column-template.html", thymeleafContext);
+
+        simpleMailService.sendHtmlMessage(to, subject, templateHtmlBody);
+    }
+}
+----
+
+Templates are html files that contain rules according to templating library.
+
+For our __mail/single-column-template.html__ example, thymeleaf would expect:
+
+* __title__, __preview__ and __body__ values for model
+* template file to be placed under ```resources/templates/mail``` directory as thymeleaf is by default configured to search templates under ```resources/templates``` directory
+
+
+single-column-template.html is HTML file that expects model values and uses __data-th-text__ and __data-th-utext__ thymeleaf attributes to insert them.
+
+[source,html]
+----
+<!DOCTYPE html>
+<html lang="en" data-th-fragment="mail-single-column-content">
+<head>
+  <title data-th-text="${title}">Single Column Hybrid</title>
+......
+<body id="body" style="margin: 0 !important; padding: 0 !important;">
+
+<!-- Preview text for the inbox -->
+<div style="display: none; max-height: 0; overflow: hidden;" data-th-if="${preview}" data-th-text="${preview}">
+  This will be displayed underneath the subject line. Use it wisely.
+</div>
+......
+ <!-- Body copy -->
+  <p style="margin: 0 0 20px 0;" data-th-if="${body}" data-th-utext="${body}">Lorem
+......
+</body>
+</html>
+----
+
+== Internationalization
+
+To send translated messages we need to define message resources for each language we want to support and use our library build in way to insert correct values for each language.
+
+Under resources folder define ```message.properties``` with default language message keys, in this example: __greetings__, __signature__ and __regards__
+
+----
+greetings=Hello {0}
+signature=yours truly {0}
+regards=kind regards
+----
+
+Define ```message_<lang>.properties``` and translations for every language you want to support.
+
+We can use messages in our thymeleaf templates with ```#{message_key(<parameters>)}```:
+
+[source,html]
+----
+<p data-th-text="#{greetings(${recipient})}"></p>
+<p data-th-text="${text}"></p>
+<p data-th-text="#{regards}"></p>
+<p>
+  <em data-th-text="#{signature(${sender})}"></em> <br />
+</p>
+----
+
+and we set locale when we process our templates with:
+
+[source,java]
+----
+Context thymeleafContext = new Context();
+thymeleafContext.setLocale(<locale>);
+String templateHtmlBody = thymeleafTemplateEngine.process("<template>", thymeleafContext);
+----

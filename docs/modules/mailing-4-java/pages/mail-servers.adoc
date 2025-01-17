@@ -1,0 +1,9 @@
+= Mail Servers
+
+To send mail we'll need to have access to SMTP Server (Simple Mail Transfer Protocol Server).
+
+For local development we can set up tools like link:https://mailpit.axllent.org/[MailPit] that act as local SMTP server and intercept mails we send.
+
+Google offers free SMTP service for our Gmail accounts we can use as well.
+
+When we need to scale we can transition to dedicated email services, like link:https://www.mailgun.com/[MailGun].

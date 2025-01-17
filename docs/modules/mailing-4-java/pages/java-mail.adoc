@@ -1,0 +1,3 @@
+= Mailing for Java
+
+In Java, link:https://jakartaee.github.io/mail-api/[Jakarta Mail] (formerly JavaMail) is used to send and receive email via SMTP, POP3 and IMAP protocols.
