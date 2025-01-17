@@ -1,0 +1,7 @@
+= Mailing for Java and Spring
+
+Youtube tutorial accompanies this repository:
+
+Comprehensive Guide To Email in Spring:
+
+image::docs/images/mailing_4_java.png[youtube tutorial, link=https://youtu.be/Iezwcq94Xrk]
